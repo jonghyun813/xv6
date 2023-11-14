@@ -221,6 +221,45 @@ fork(void)
   return pid;
 }
 
+int clone(void(*func)(void), void* stack) {
+  struct proc *np;
+  struct proc *curproc = myproc();
+  int tid, i;
+  uint *return_address;
+
+  if((np = allocproc()) == 0){
+    return -1;
+  }
+
+  np->sz = curproc->sz;
+  np->pgdir = curproc->pgdir;
+  np->parent = curproc;
+  *np->tf = *curproc->tf;
+  np->tf->eax = 0;
+
+  np->tf->eip = (uint)func;
+
+  np->tf->ebp = (uint)stack + 4096;
+  np->tf->esp = (uint)stack + 4096 - 4;
+  return_address = np->tf->esp;
+  *return_address = 0xFFFFFFFF;
+
+  for(i = 0; i < NOFILE; i++)
+    if(curproc->ofile[i])
+      np->ofile[i] = curproc->ofile[i];
+  np->cwd = curproc->cwd;
+
+  safestrcpy(np->name, curproc->name, sizeof(curproc->name));
+
+  acquire(&ptable.lock);
+  np->state = RUNNABLE;
+  release(&ptable.lock);
+
+  tid = np->pid;
+
+  return tid;
+}
+
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.

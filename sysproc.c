@@ -99,5 +99,15 @@ sys_dummy(void)
 int
 sys_clone(void)
 {
-  return 0;
+  void (*func)(void);
+  void *stack;
+
+  if(argptr(0, &func, sizeof(func)) < 0)
+    return -1;
+  if(argptr(1, &stack, sizeof(stack)) < 0)
+    return -1;
+
+  int tid = clone(func, stack);
+
+  return tid;
 }
