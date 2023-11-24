@@ -25,6 +25,9 @@ int sleep(int);
 int uptime(void);
 int dummy(void);
 int clone(void(*)(), void*);
+int thread_exit(void);
+int thread_join(void**);
+
 
 // ulib.c
 int stat(const char*, struct stat*);

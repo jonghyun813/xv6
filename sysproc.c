@@ -111,3 +111,19 @@ sys_clone(void)
 
   return tid;
 }
+
+int
+sys_thread_exit(void)
+{
+  return t_exit();
+}
+
+int sys_thread_join(void)
+{
+  void **stack;
+
+  if(argptr(0, &stack, sizeof(stack)) < 0)
+    return -1;
+
+  return join(stack);
+}
