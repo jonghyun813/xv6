@@ -124,3 +124,36 @@ popcli(void)
     sti();
 }
 
+int t_holding(struct t_spinlock *lk) {
+  int r;
+  pushcli();
+  r = lk->locked && lk->cpu == mycpu();
+  popcli();
+  return r;
+}
+
+void t_acquire(struct t_spinlock *lk) {
+
+  pushcli(); // disable interrupts to avoid deadlock
+  if(t_holding(lk))
+    panic("acquire");
+
+  while(xchg(&lk->locked, 1) != 0)
+    ;
+
+  __sync_synchronize();
+  lk->cpu = mycpu();
+}
+
+void t_release(struct t_spinlock *lk) {
+  
+  if(!t_holding(lk))
+    panic("release");
+
+  lk->cpu = 0;
+  __sync_synchronize();
+
+  asm volatile("movl $0, %0" : "+m" (lk->locked) : );
+
+  popcli();
+}

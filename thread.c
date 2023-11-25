@@ -16,9 +16,8 @@ int main() {
     printf(1, "Printing in PID(%d) : global_int is initially %d\n", cur_pid, global_int);
 
     tid = thread_create(func);
-    printf(1, "Printing in PID(%d) : thread_create returned %d\n", cur_pid, tid);
-
     join_pid = thread_join(stack);
+    printf(1, "Printing in PID(%d) : thread_create returned %d\n", cur_pid, tid);
     printf(1, "Printing in PID(%d) : thread_join returned %d\n", cur_pid, join_pid);
 
     printf(1, "stack address in main : %d\n", *stack);

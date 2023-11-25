@@ -34,6 +34,11 @@ struct context {
 
 enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
+struct t_spinlock {
+  uint locked;
+  struct cpu *cpu;
+};
+
 // Per-process state
 struct proc {
   uint sz;                     // Size of process memory (bytes)
@@ -49,6 +54,9 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  struct t_spinlock *t_splock;
+  struct t_spinlock t_splock_table[4];
 };
 
 // Process memory is laid out contiguously, low addresses first:

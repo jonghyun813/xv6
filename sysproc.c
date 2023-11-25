@@ -93,7 +93,15 @@ sys_uptime(void)
 int
 sys_dummy(void)
 {
+  dummy();
   return 23;
+}
+
+int
+sys_dummy2(void)
+{
+  dummy2();
+  return 1;
 }
 
 int
@@ -112,18 +120,24 @@ sys_clone(void)
   return tid;
 }
 
-int
-sys_thread_exit(void)
-{
+int sys_thread_exit(void) {
   return t_exit();
 }
 
-int sys_thread_join(void)
-{
+int sys_thread_join(void) {
   void **stack;
 
   if(argptr(0, &stack, sizeof(stack)) < 0)
     return -1;
 
   return join(stack);
+}
+
+int sys_t_lock_test(void) {
+  int n;
+
+  if(argint(0, &n) < 0)
+    return -1;
+
+  t_lock_test(n);
 }

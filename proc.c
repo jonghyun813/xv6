@@ -218,6 +218,16 @@ fork(void)
 
   release(&ptable.lock);
 
+  np->t_splock = np->t_splock_table;
+  np->t_splock_table[0].locked = 0;
+  np->t_splock_table[0].cpu = 0;
+  np->t_splock_table[1].locked = 0;
+  np->t_splock_table[1].cpu = 0;
+  np->t_splock_table[2].locked = 0;
+  np->t_splock_table[2].cpu = 0;
+  np->t_splock_table[3].locked = 0;
+  np->t_splock_table[3].cpu = 0;
+
   return pid;
 }
 
@@ -256,6 +266,8 @@ int clone(void(*func)(void), void* stack) {
   release(&ptable.lock);
 
   tid = np->pid;
+
+  np->t_splock = curproc->t_splock;
 
   return tid;
 }
@@ -635,4 +647,29 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+void dummy(void) {
+  struct proc *p = myproc();
+  p->t_splock[0].locked = -1;
+  p->t_splock[1].locked = -2;
+  p->t_splock[2].locked = -3;
+  p->t_splock[3].locked = -4;
+}
+
+void dummy2(void) {
+  struct proc *p = myproc();
+
+  for(int i = 0; i < 4; i++) {
+    cprintf("lock %d : %d\n", i, p->t_splock[i].locked);
+  }
+}
+
+void t_lock_test(int n) {
+  struct proc *p = myproc();
+  t_acquire(&p->t_splock[n]);
+  cprintf("entering critical section\n");
+  dummy2();
+  cprintf("exiting critical section\n");
+  t_release(&p->t_splock[n]);
 }

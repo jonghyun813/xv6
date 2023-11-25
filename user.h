@@ -24,9 +24,11 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int dummy(void);
+int dummy2(void);
 int clone(void(*)(), void*);
 int thread_exit(void);
 int thread_join(void**);
+void t_lock_test(int);
 
 
 // ulib.c

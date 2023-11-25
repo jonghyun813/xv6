@@ -21,6 +21,8 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #define SYS_dummy  22
-#define SYS_clone  23
-#define SYS_thread_exit 24
-#define SYS_thread_join 25
+#define SYS_dummy2 23
+#define SYS_clone  24
+#define SYS_thread_exit 25
+#define SYS_thread_join 26
+#define SYS_t_lock_test 27
